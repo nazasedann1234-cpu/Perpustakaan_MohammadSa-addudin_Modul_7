@@ -78,13 +78,14 @@ class BukuController extends Controller
     // CELAH A2 (sengaja rentan): SQL Injection
     public function cari(Request $request): JsonResponse
     {
-        $judul = $request->query('judul');
+        $judul = $request->input('judul');
 
-        $hasil = DB::select(
-            "SELECT id, kategori_id, judul, penulis, tahun_terbit FROM bukus WHERE judul = '$judul'"
+        $buku = DB::select(
+            'SELECT * FROM bukus WHERE judul = ?',
+            [$judul]
         );
 
-        return response()->json($hasil);
+        return response()->json($buku);
     }
     // Bentuk datanya disamakan dengan array lama, jadi View tidak perlu diubah
     private function formatBuku(Buku $buku): array
