@@ -45,7 +45,9 @@ class PeminjamanController extends Controller
             ->with('success', 'Pengajuan peminjaman terkirim. Tunggu persetujuan petugas.');
     }
 
-    
+    /**
+     * Siswa hanya dapat melihat peminjamannya sendiri; admin dan petugas dapat melihat semua.
+     */
     /**
      * A4 (Soal 1): sengaja rentan terhadap IDOR.
      */

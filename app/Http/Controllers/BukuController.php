@@ -74,22 +74,18 @@ class BukuController extends Controller
         return redirect()->route('buku.index')
             ->with('success', 'Buku berhasil dihapus.');
     }
-    /**
-     * Perbaikan A2: nilai `judul` dikirim terpisah lewat query binding (placeholder ?),
-     * sehingga selalu diperlakukan sebagai data, bukan bagian dari perintah SQL.
-     */
+
+    // CELAH A2 (sengaja rentan): SQL Injection
     public function cari(Request $request): JsonResponse
     {
         $judul = $request->query('judul');
 
         $hasil = DB::select(
-            'SELECT id, kategori_id, judul, penulis, tahun_terbit FROM bukus WHERE judul = ?',
-            [$judul]
+            "SELECT id, kategori_id, judul, penulis, tahun_terbit FROM bukus WHERE judul = '$judul'"
         );
 
         return response()->json($hasil);
     }
-
     // Bentuk datanya disamakan dengan array lama, jadi View tidak perlu diubah
     private function formatBuku(Buku $buku): array
     {

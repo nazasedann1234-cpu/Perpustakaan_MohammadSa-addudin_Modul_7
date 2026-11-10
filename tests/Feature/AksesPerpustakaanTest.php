@@ -119,8 +119,42 @@ class AksesPerpustakaanTest extends TestCase
         $this->get(route('admin.pengguna.index'))->assertOk();
         $this->get(route('kelola.peminjaman.index'))->assertOk();
         $this->get(route('kelola.pengembalian.index'))->assertOk();
-        $this->get(route('laporan.index'))->assertOk();
+        $this->get(route('laporan.index'))
+            ->assertOk()
+            ->assertSee('Cetak Laporan')
+            ->assertSee('Rekapitulasi Peminjaman Buku');
         $this->getJson('/api/rekap/buku-per-kategori')->assertOk();
+    }
+
+    public function test_judul_buku_di_escaping_dan_pencarian_tidak_menggabungkan_sql(): void
+    {
+        $buku = Buku::firstOrFail();
+        $judulBerbahaya = "<script>alert('uji')</script>";
+        $buku->update(['judul' => $judulBerbahaya]);
+
+        $this->actingAs($this->akun('siswa@gmail.com'));
+
+        $this->get(route('buku.index'))
+            ->assertOk()
+            ->assertSee($judulBerbahaya);
+
+        $this->getJson(route('buku.cari', ['judul' => "' OR '1'='1"]))
+            ->assertOk()
+            ->assertExactJson([]);
+    }
+
+    public function test_penghapusan_buku_hanya_menggunakan_delete_dan_memerlukan_izin_kelola(): void
+    {
+        $buku = Buku::firstOrFail();
+
+        $this->actingAs($this->akun('siswa@gmail.com'));
+        $this->delete(route('buku.destroy', $buku))->assertForbidden();
+        $this->assertDatabaseHas('bukus', ['id' => $buku->id]);
+
+        $this->actingAs($this->akun('admin@gmail.com'));
+        $this->get('/buku/'.$buku->id.'/hapus')->assertNotFound();
+        $this->delete(route('buku.destroy', $buku))->assertRedirect(route('buku.index'));
+        $this->assertDatabaseMissing('bukus', ['id' => $buku->id]);
     }
 
     public function test_admin_dapat_menambah_mengubah_dan_menghapus_buku(): void
@@ -181,7 +215,10 @@ class AksesPerpustakaanTest extends TestCase
 
         $this->get(route('petugas.dashboard'))->assertOk();
         $this->postJson('/api/buku', $this->dataBuku())->assertCreated();
-        $this->get(route('laporan.index'))->assertOk();
+        $this->get(route('laporan.index'))
+            ->assertOk()
+            ->assertSee('Cetak Laporan')
+            ->assertSee('Rekapitulasi Peminjaman Buku');
     }
 
     public function test_petugas_dapat_memproses_peminjaman_dan_pengembalian(): void
@@ -277,6 +314,19 @@ class AksesPerpustakaanTest extends TestCase
         $lain = Anggota::where('id', '!=', $siswa->anggota->id)->firstOrFail();
 
         $this->get(route('anggota.riwayat', $lain))->assertForbidden();
+    }
+
+    public function test_siswa_hanya_dapat_melihat_detail_peminjaman_miliknya(): void
+    {
+        $siswa = $this->akun('siswa@gmail.com');
+        $anggotaLain = Anggota::where('id', '!=', $siswa->anggota->id)->firstOrFail();
+        $peminjamanMilikLain = Peminjaman::where('anggota_id', $anggotaLain->id)->firstOrFail();
+
+        $this->actingAs($siswa);
+        $this->get(route('peminjaman.show', $peminjamanMilikLain))->assertForbidden();
+
+        $peminjamanMilikSiswa = Peminjaman::where('anggota_id', $siswa->anggota->id)->firstOrFail();
+        $this->get(route('peminjaman.show', $peminjamanMilikSiswa))->assertOk();
     }
 
     public function test_admin_dan_petugas_boleh_melihat_riwayat_anggota_lain(): void

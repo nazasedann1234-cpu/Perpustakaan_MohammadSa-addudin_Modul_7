@@ -23,6 +23,9 @@ class LaporanController extends Controller
             'perStatus'         => Peminjaman::select('status', DB::raw('COUNT(*) as total'))
                 ->groupBy('status')
                 ->pluck('total', 'status'),
+            'daftarPeminjaman'  => Peminjaman::with(['anggota', 'buku'])
+                ->orderBy('id')
+                ->get(),
         ]);
     }
 }

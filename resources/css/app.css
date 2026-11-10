@@ -483,6 +483,88 @@ a {
     color: var(--biru-tua);
     text-align: left;
 }
+.laporan__aksi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.laporan__aksi h2 {
+    margin-bottom: 0;
+}
+.laporan__aksi .tombol {
+    margin-top: 0;
+}
+.laporan-cetak {
+    margin-bottom: 30px;
+}
+.laporan-cetak h3 {
+    margin-bottom: 12px;
+}
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 15mm;
+    }
+
+    body {
+        background: #fff;
+        color: #000;
+        font-family: Arial, sans-serif;
+        font-size: 10pt;
+    }
+
+    .header,
+    .navbar,
+    .footer,
+    .konten > :not(.laporan) {
+        display: none !important;
+    }
+
+    .konten {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .laporan > :not(.laporan-cetak) {
+        display: none !important;
+    }
+
+    .laporan-cetak {
+        margin: 0;
+    }
+
+    .laporan-cetak h3 {
+        color: #000;
+        font-size: 15pt;
+    }
+
+    .laporan-cetak .tabel-gulir {
+        overflow: visible;
+    }
+
+    .laporan-cetak .tabel {
+        table-layout: fixed;
+        font-size: 8pt;
+    }
+
+    .laporan-cetak .tabel th,
+    .laporan-cetak .tabel td {
+        padding: 6px 5px;
+        border: 1px solid #999;
+        overflow-wrap: anywhere;
+    }
+
+    .laporan-cetak .tabel thead {
+        display: table-header-group;
+    }
+
+    .laporan-cetak tr {
+        break-inside: avoid;
+    }
+}
 .aksi .form-inline + .form-inline,
 .aksi .tombol + .form-inline,
 .aksi .form-inline + .tombol {

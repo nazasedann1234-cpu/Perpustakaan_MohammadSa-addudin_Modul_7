@@ -35,8 +35,7 @@ Route::middleware('auth')->group(function () {
 
     // A3 (Soal 1): sengaja rentan terhadap CSRF, sesuai spesifikasi praktikum.
     // Route GET ini hanya dilindungi auth dan memanggil method destroy yang sudah ada.
-    Route::delete('/buku/{buku}', [BukuController::class, 'destroy'])
-        ->name('buku.destroy');
+    Route::get('/buku/{buku}/hapus', [BukuController::class, 'destroy'])->name('buku.hapus');
 
     //  Buku: lihat
     Route::middleware('permission:lihat daftar buku')->group(function () {
