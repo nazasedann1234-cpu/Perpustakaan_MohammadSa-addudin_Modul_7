@@ -29,7 +29,6 @@
             <tr>
                 <td>{{ $daftarBuku->firstItem() + $loop->index }}</td>
                 <td>{{ $buku->kategori->nama }}</td>
-                {{-- Perbaikan A1: {{ }} melakukan escaping, skrip tampil sebagai teks --}}
                 <td><a href="{{ route('buku.show', ['id' => $buku->id]) }}">
                         {{ $buku->judul }}</a></td>
                 <td>{{ $buku->penulis }}</td>
