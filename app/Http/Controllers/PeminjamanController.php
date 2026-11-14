@@ -55,6 +55,8 @@ class PeminjamanController extends Controller
     {
         $peminjaman = Peminjaman::findOrFail($id);
 
+        Gate::authorize('view', $peminjaman);
+
         return view('peminjaman.detail', compact('peminjaman'));
     }
     /** GET /peminjaman-saya (permission: melihat status peminjaman sendiri). */
