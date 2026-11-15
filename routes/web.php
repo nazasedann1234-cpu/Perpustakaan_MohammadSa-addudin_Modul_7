@@ -126,10 +126,13 @@ Route::middleware('auth')->group(function () {
             ->name('pengembalian.catat');
     });
 
+
+
     //  Laporan perpustakaan 
     Route::get('/laporan', [LaporanController::class, 'index'])
         ->middleware('permission:lihat laporan perpustakaan')
         ->name('laporan.index');
 });
+
 
 require __DIR__ . '/auth.php';

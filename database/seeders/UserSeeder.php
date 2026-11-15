@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    
+
     public function run(): void
     {
         $daftar = [
@@ -38,6 +38,13 @@ class UserSeeder extends Seeder
                     'no_telepon' => $data['no_telepon'],
                 ]
             );
+        }
+        // Mengganti password bawaan akun admin
+        $admin = User::where('email', 'admin@gmail.com')->first();
+
+        if ($admin) {
+            $admin->password = Hash::make('Akuadmin123');
+            $admin->save();
         }
     }
 }
